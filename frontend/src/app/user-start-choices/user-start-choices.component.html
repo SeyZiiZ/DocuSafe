@@ -1,0 +1,32 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white px-4">
+    <div class="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center space-y-6">
+
+        <h2 class="text-2xl font-bold text-gray-800">
+            Salutation {{ pseudo }} !
+        </h2>
+
+        <p class="text-gray-600">
+            Choisissez un dossier pour stocker vos documents :
+        </p>
+
+        <button (click)="chooseDirectory()"
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md transition cursor-pointer">
+            📁 Choisir un dossier
+        </button>
+
+        <p *ngIf="selectedPath" class="text-sm text-gray-700 bg-gray-100 p-3 rounded-md border border-gray-200">
+            Dossier sélectionné : <br />
+            <strong>{{ selectedPath }}</strong>
+        </p>
+
+        <div class="flex items-center justify-center gap-2">
+            <input id="aesToggle" type="checkbox" [(ngModel)]="encryptionEnabled" class="accent-blue-500 scale-110" />
+            <label for="aesToggle" class="text-sm text-gray-700">Activer le chiffrement AES</label>
+        </div>
+
+        <button [disabled]="!selectedPath" (click)="continue()"
+            class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+            ➡️ Continuer
+        </button>
+    </div>
+</div>

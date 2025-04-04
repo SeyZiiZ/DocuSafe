@@ -1,29 +1,38 @@
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center px-4">
     <div class="max-w-md w-full text-center space-y-6">
-        <div class="flex justify-center">
-            <div class="bg-blue-500 p-4 rounded-xl shadow-lg">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 12h6m-3-3v6m2 8a9 9 0 100-18 9 9 0 000 18z" />
-                </svg>
+        <div *ngIf="!redirecting" class="max-w-md w-full text-center space-y-6">
+            <div class="flex justify-center">
+                <div class="bg-blue-500 p-4 rounded-xl shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12h6m-3-3v6m2 8a9 9 0 100-18 9 9 0 000 18z" />
+                    </svg>
+                </div>
+            </div>
+
+            <h1 class="text-2xl font-bold text-gray-800">Gérez vos documents <br>simplement</h1>
+            <p class="text-gray-500 text-sm">Pas besoin de compte. Entrez votre pseudo et commencez à organiser vos
+                documents.</p>
+
+            <input [(ngModel)]="pseudo" type="text" placeholder="Entrez votre pseudo"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+
+            <button (click)="start()"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md transition cursor-pointer">
+                Commencer
+            </button>
+
+            <div class="flex flex-wrap justify-center gap-2 pt-2">
+                <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Sans inscription</span>
+                <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Rapide</span>
+                <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Simple</span>
             </div>
         </div>
 
-        <h1 class="text-2xl font-bold text-gray-800">Gérez vos documents <br>simplement</h1>
-        <p class="text-gray-500 text-sm">Pas besoin de compte. Entrez votre pseudo et commencez à organiser vos documents.</p>
-
-        <input type="text" placeholder="Entrez votre pseudo"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" 
-        />
-
-        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md transition cursor-pointer">
-            Commencer
-        </button>
-
-        <div class="flex flex-wrap justify-center gap-2 pt-2">
-            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Sans inscription</span>
-            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Rapide</span>
-            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Simple</span>
+        <div *ngIf="redirecting" class="mt-4 text-blue-600 text-3xl">
+            Bienvenue <strong>{{ pseudo }}</strong>, vous allez être redirigé dans {{ countdown }} seconde{{ countdown >
+            1 ? 's' : '' }}...
         </div>
     </div>
 </div>
