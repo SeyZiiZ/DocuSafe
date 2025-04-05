@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const Store = require('electron-store').default;
 
 const store = new Store();
@@ -35,4 +36,28 @@ ipcMain.handle('dialog:openDirectory', async () => {
     properties: ['openDirectory']
   });
   return result.filePaths[0];
+});
+
+ipcMain.handle('dialog:saveEncryptedFile', async (_, defaultFileName, customFolderPath) => {
+  const defaultSavePath = customFolderPath
+    ? path.join(customFolderPath, defaultFileName)
+    : path.join(app.getPath('downloads'), defaultFileName);
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    title: 'Enregistrer le fichier chiffré',
+    defaultPath: defaultSavePath,
+    filters: [{ name: 'Encrypted Files', extensions: ['encrypted'] }]
+  });
+
+  return canceled ? null : filePath;
+});
+
+ipcMain.handle('file:saveEncryptedFile', async (_, { filePath, base64Data }) => {
+  try {
+    const buffer = Buffer.from(base64Data, 'base64');
+    fs.writeFileSync(filePath, buffer);
+    return { success: true, path: filePath };
+  } catch (err) {
+    console.error('❌ Erreur lors de l\'écriture du fichier :', err);
+    return { success: false, error: err.message };
+  }
 });

@@ -20,7 +20,10 @@ export class SecurityComponent {
   encryptionStatus: string = '';
   loading: boolean = false;
   advancedMode: boolean = false;
-  contentFile: any = ""; 
+  contentFile: any = "";
+  encryptedData: string | null = null;
+  encryptedFilename: string = '';
+  decryptingKey: string = '';
 
   constructor(
     private store: ElectronStoreService,
@@ -74,55 +77,57 @@ export class SecurityComponent {
     this.sendToBackend(formData);
   }  
 
-  // Méthode de soumission du formulaire
   sendToBackend(formData: FormData): void {
+    this.loading = !this.loading
+
     this.encryptionService.sendToBackend(formData).subscribe({
       next: (data) => {
         console.log('✅ Réponse :', data);
         this.encryptionStatus = data.message;
 
-        // si tu veux permettre le téléchargement du fichier chiffré :
-        //this.downloadEncryptedFile(data.encryptedFileBase64, data.originalFilename + '.encrypted');
+        const input = document.querySelector('#fileInput') as HTMLInputElement;
+        if (input) input.value = '';
+        this.selectedFile = null;
+        this.fileName = "";
+        
+        this.encryptedData = data.encryptedFileBase64;
+        this.encryptedFilename = data.originalFilename + '.encrypted';
+        this.decryptingKey = data.aesKey;
+
+        this.loading = false;
       },
       error: (err) => {
         console.error('❌ Erreur d\'envoi :', err);
         this.encryptionStatus = 'Erreur lors de l\'envoi au serveur.';
+        this.loading = false;
       }
     });
   }
 
-/*
+  async downloadEncryptedFile(): Promise<void> {
+    if (!this.encryptedData || !this.encryptedFilename) return;
 
-  downloadEncryptedFile(base64: string, filename: string): void {
-    const binary = atob(base64);
-    const byteArray = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      byteArray[i] = binary.charCodeAt(i);
-    }
+    const defaultFolder  = await this.store.get('storagePath') || '';
+  
+    (window as any).electronAPI
+    .openSaveDialog(this.encryptedFilename, defaultFolder)
+    .then((filePath: string | null) => {
+      if (!filePath) return;
 
-    const blob = new Blob([byteArray]);
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
+      return (window as any).electronAPI.saveEncryptedFile(filePath, this.encryptedData);
+    })
+    .then((res: any) => {
+      if (res?.success) {
+        this.encryptionStatus = '✅ Fichier sauvegardé : ' + res.path;
+      } else {
+        console.error('❌ Erreur de sauvegarde :', res?.error);
+        this.encryptionStatus = 'Erreur lors de la sauvegarde';
+      }
+    })
+    .catch((err: any) => {
+      console.error('❌ Erreur inattendue :', err);
+      this.encryptionStatus = 'Erreur inattendue lors de la sauvegarde';
+    });
   }
-
-*/
-
+  
 }
-
-
-
-/*
-    // Cette fonction peut simplement montrer que le processus est en cours
-    this.encryptionStatus = 'Envoi du fichier au serveur pour chiffrement...';
-    
-    // Simuler un appel API (à remplacer par votre vrai appel)
-    setTimeout(() => {
-      this.encryptionStatus = 'Fichier envoyé avec succès! Chiffrement en cours...';
-    }, 1000);
-
-    setTimeout(() => {
-      this.encryptionStatus = 'Fichier chiffrer avec succes, une copie chiffré a été crée a l\' dans votre dossier par défaut'
-    }, 3000);
-*/
