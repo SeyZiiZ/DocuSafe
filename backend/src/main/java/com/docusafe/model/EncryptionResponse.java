@@ -1,12 +1,12 @@
 package com.docusafe.model;
 
-public class ChiffrementResponse {
+public class EncryptionResponse {
     private String message;
     private String originalFilename;
     private String encryptedFileBase64;
     private String aesKey;
 
-    public ChiffrementResponse(String message, String originalFilename, String encryptedFileBase64, String aesKey) {
+    public EncryptionResponse(String message, String originalFilename, String encryptedFileBase64, String aesKey) {
         this.message = message;
         this.originalFilename = originalFilename;
         this.encryptedFileBase64 = encryptedFileBase64;

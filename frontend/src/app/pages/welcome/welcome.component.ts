@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
-import { ElectronStoreService } from '../../electron-store.service';
+import { ElectronStoreService } from '../../services/electron/electron-store.service';
 
 @Component({
   selector: 'app-welcome',

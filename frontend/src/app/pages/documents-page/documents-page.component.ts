@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
-import { ElectronStoreService } from '../../electron-store.service';
+import { ElectronStoreService } from '../../services/electron/electron-store.service';
 import { Router } from '@angular/router';
 
 @Component({

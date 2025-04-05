@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
-import { ElectronStoreService } from '../../electron-store.service';
+import { ElectronStoreService } from '../../services/electron/electron-store.service';
 import { Router } from '@angular/router';
-import { EncryptionService } from '../../services/EncryptionService';
+import { EncryptionService } from '../../services/API/EncryptionService';
 
 @Component({
   selector: 'app-security',

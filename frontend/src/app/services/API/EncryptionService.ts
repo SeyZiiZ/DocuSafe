@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class EncryptionService {
-  private apiUrl = 'http://localhost:8080/api/chiffrement';
+  private apiUrl = 'http://localhost:8080/api/encryption';
 
   constructor(private http: HttpClient) {}
 

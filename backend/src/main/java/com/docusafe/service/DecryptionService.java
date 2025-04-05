@@ -1,5 +1,6 @@
+// TO DO : COMPLETLY CHANGE LOGIC (ENCRYPTION LOGIC FOR THE MOMENT)
 package com.docusafe.service;
-import com.docusafe.model.ChiffrementResponse;
+import com.docusafe.model.EncryptionResponse;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 @Service
-public class ChiffrementService {
-
+public class DecryptionService {
     public ResponseEntity<?> processFile(MultipartFile file, String encryptionType, String aesKey, String publicKey) {
         try {
             String filename = file.getOriginalFilename();
@@ -31,7 +31,7 @@ public class ChiffrementService {
                 if (encrypted == null) return ResponseEntity.status(500).body("Erreur lors du chiffrement AES");
             
                 String base64Encrypted = Base64.getEncoder().encodeToString(encrypted);
-                ChiffrementResponse response = new ChiffrementResponse(
+                EncryptionResponse response = new EncryptionResponse(
                     "✅ Fichier chiffré avec AES",
                     filename,
                     base64Encrypted,

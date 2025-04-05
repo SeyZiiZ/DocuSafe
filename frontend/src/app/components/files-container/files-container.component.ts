@@ -6,8 +6,6 @@ interface FileData {
   name: string;
   size: string;
   modified: string;
-  iconColor: string;
-  iconSVG: string;
 }
 
 @Component({

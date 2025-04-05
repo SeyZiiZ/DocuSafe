@@ -38,6 +38,19 @@ ipcMain.handle('dialog:openDirectory', async () => {
   return result.filePaths[0];
 });
 
+ipcMain.handle('get-files', async (event, folderPath) => {
+  const files = fs.readdirSync(folderPath);
+  return files.map(file => {
+    const filePath = path.join(folderPath, file);
+    const stats = fs.statSync(filePath);
+    return {
+      name: file,
+      size: (stats.size / 1024).toFixed(1) + ' Ko',
+      modified: new Date(stats.mtime).toLocaleString(),
+    };
+  });
+});
+
 ipcMain.handle('dialog:saveEncryptedFile', async (_, defaultFileName, customFolderPath) => {
   const defaultSavePath = customFolderPath
     ? path.join(customFolderPath, defaultFileName)

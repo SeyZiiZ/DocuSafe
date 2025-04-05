@@ -45,9 +45,11 @@
 
                 <!-- User profile -->
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center space-x-2">
-                        <img src="/api/placeholder/32/32" class="h-8 w-8 rounded-full" alt="Photo de profil">
-                    </button>
+                    <a [routerLink]="'/settings'">
+                        <button class="flex items-center space-x-2 cursor-pointer">
+                            <img *ngIf="profileImageUrl" [src]="profileImageUrl" class="h-8 w-8 rounded-full" alt="Photo de profil">
+                        </button>
+                    </a>
                 </div>
             </div>
         </header>
@@ -97,7 +99,7 @@
             </div>
 
             <!-- Files section -->
-            <app-files-container [currentPath]="currentPath" [files]="recentFiles"></app-files-container>
+            <app-files-container [currentPath]="currentPath" [files]="files"></app-files-container>
         </main>
     </div>
 </div>
