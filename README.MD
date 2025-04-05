@@ -6,16 +6,16 @@
 
 ## 🛠️ Technical stack
 
-- Frontend**: Angular (integrated into Electron)
-- Backend**: Java + Spring Boot
-- Database** : SQLite (local)
-- Packaging** : Application packaged in `.exe` for Windows (via Electron Builder) (have to do it)
+- Frontend: **Angular (integrated into Electron)**
+- Backend: **Java + Spring Boot**
+- Database : **SQLite (local)**
+- Packaging : **Application packaged in `.exe` for Windows (via Electron Builder) (have to do it)**
 
 ---
 
 ## ✨ Features
 
-- 🔒 File Encryption AES / RSA
+- 🔒 File Encryption-Decryption AES / RSA
 - 🔍 Integrated search system
 - 📝 Rich text editor
 - 👤 Local multi-profile management (coming soon)
@@ -28,8 +28,8 @@
 
 ### Prerequisites
 
-- Node.js](https://nodejs.org/)
-- Angular CLI](https://angular.io/cli)
+- [Node.js](https://nodejs.org/)
+- [Angular CLI](https://angular.io/cli)
 - [Java 17+](https://adoptium.net/)
 - [Maven](https://maven.apache.org/)
 - [Electron](https://www.electronjs.org/)
