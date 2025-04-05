@@ -1,0 +1,103 @@
+<style>
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: #f9fafb;
+    }
+
+    .file-card {
+        transition: all 0.2s ease;
+    }
+
+    .file-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<div class="flex min-h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <app-sidebar (disconnectClick)="disconnect()"></app-sidebar>
+
+    <!-- Main content -->
+    <div class="flex-1 md:ml-64">
+        <!-- Topbar -->
+        <header class="sticky top-0 z-10 bg-white shadow-sm">
+            <div class="flex items-center justify-between px-4 py-3 md:px-6">
+                <!-- Mobile menu button -->
+                <button class="md:hidden rounded-md p-2 text-gray-500 hover:bg-gray-100">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <!-- Search bar -->
+                <div class="relative flex-1 max-w-xl mx-4">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="text" placeholder="Rechercher un document..."
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 text-sm placeholder-gray-500">
+                </div>
+
+                <!-- User profile -->
+                <div class="flex items-center space-x-4">
+                    <button class="flex items-center space-x-2">
+                        <img src="/api/placeholder/32/32" class="h-8 w-8 rounded-full" alt="Photo de profil">
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content area -->
+        <main class="p-4 md:p-6 space-y-6">
+            <!-- Actions bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <h1 class="text-2xl font-semibold text-gray-800">Bienvenue sur DocuSafe <span class="text-indigo-600">{{pseudo}}</span> </h1>
+                <div class="mt-3 sm:mt-0 flex space-x-2">
+                    <button
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Nouveau document
+                    </button>
+                    <button
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
+                        <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        Importer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a [routerLink]="'/documents'">
+                    <app-feature-card title="Gestion de fichiers"
+                        description="Organisez et prévisualisez vos documents en toute simplicité." [iconSVG]="icons.folder"
+                        colorClasses="bg-indigo-50 text-indigo-600"></app-feature-card>
+                </a>
+                <a [routerLink]="'/security'">
+                    <app-feature-card title="Chiffrement AES"
+                        description="Protégez vos données avec un chiffrement de niveau militaire." [iconSVG]="icons.lock"
+                        colorClasses="bg-green-50 text-green-600"></app-feature-card>
+                </a>
+
+                <app-feature-card title="Recherche intelligente"
+                    description="Trouvez instantanément le contenu de vos documents." [iconSVG]="icons.search"
+                    colorClasses="bg-purple-50 text-purple-600"></app-feature-card>
+            </div>
+
+            <!-- Files section -->
+            <app-files-container [currentPath]="currentPath" [files]="recentFiles"></app-files-container>
+        </main>
+    </div>
+</div>

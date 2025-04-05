@@ -1,0 +1,86 @@
+<div class="flex min-h-screen bg-gray-50">
+    <app-sidebar (disconnectClick)="disconnect()"></app-sidebar>
+  
+    <div class="max-w-md mx-auto mt-8 bg-white rounded-lg shadow-md p-6 w-full">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">Chiffrement de fichier</h2>
+  
+      <!-- Fichier -->
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Sélectionner un fichier</label>
+        <div class="flex items-center justify-center w-full">
+          <label
+            class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg class="w-8 h-8 mb-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="mb-1 text-sm text-gray-500"><span class="font-semibold">Cliquez pour sélectionner</span> ou glissez-déposez</p>
+              <p class="text-xs text-gray-500">Tous types de fichiers supportés</p>
+            </div>
+            <input type="file" class="hidden" (change)="handleFileChange($event)" />
+          </label>
+        </div>
+        <p *ngIf="fileName" class="mt-2 text-sm text-gray-600">
+          Fichier sélectionné : <span class="font-medium">{{ fileName }}</span>
+        </p>
+      </div>
+  
+      <!-- Mode avancé -->
+      <div class="mb-4">
+        <label class="flex items-center text-sm">
+          <input type="checkbox" (change)="toggleAdvancedMode()" class="mr-2" />
+          Mode avancé (utiliser ma propre clé et RSA)
+        </label>
+      </div>
+  
+      <!-- Type de chiffrement -->
+      <div class="mb-5" *ngIf="advancedMode">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Type de chiffrement</label>
+        <div class="flex gap-6">
+          <div class="flex items-center">
+            <input id="aes" type="radio" name="encryptionType" [(ngModel)]="encryptionType" value="AES"
+              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" />
+            <label for="aes" class="ml-2 block text-sm font-medium text-gray-700">AES (symétrique)</label>
+          </div>
+          <div class="flex items-center">
+            <input id="rsa" type="radio" name="encryptionType" [(ngModel)]="encryptionType" value="RSA"
+              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" />
+            <label for="rsa" class="ml-2 block text-sm font-medium text-gray-700">RSA (asymétrique)</label>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Clés -->
+      <div *ngIf="advancedMode && encryptionType === 'AES'" class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Clé de chiffrement AES</label>
+        <input type="password"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-500"
+          [(ngModel)]="aesKey" placeholder="Votre clé secrète" />
+      </div>
+  
+      <div *ngIf="advancedMode && encryptionType === 'RSA'" class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Clé publique RSA</label>
+        <textarea rows="4"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-indigo-500"
+          [(ngModel)]="publicKey" placeholder="Collez votre clé publique ici"></textarea>
+      </div>
+      
+      <!-- Bouton -->
+      <div>
+        <button type="button"
+          class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 cursor-pointer"
+          (click)="encryptFile()" [disabled]="!selectedFile || loading">
+          <span *ngIf="!loading">🔐 Chiffrer</span>
+          <span *ngIf="loading">⏳ Chiffrement en cours...</span>
+        </button>
+      </div>
+  
+      <!-- Résultat -->
+      <div class="mt-4 p-3 rounded-md bg-green-50 text-green-700" *ngIf="encryptionStatus">
+        <p class="text-sm">{{ encryptionStatus }}</p>
+      </div>
+    </div>
+  </div>
+  

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ElectronStoreService } from '../electron-store.service';
+import { ElectronStoreService } from '../../electron-store.service';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';

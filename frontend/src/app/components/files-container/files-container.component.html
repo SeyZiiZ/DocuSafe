@@ -1,0 +1,35 @@
+<div class="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-medium text-gray-900">Fichiers récents</h2>
+        <div class="text-sm text-gray-500">Dossier : {{ currentPath }}</div>
+    </div>
+
+    <div class="overflow-hidden">
+        <div class="bg-gray-50 px-4 py-3 flex items-center rounded-t-lg border-b border-gray-200">
+            <div class="w-6/12 text-sm font-medium text-gray-700">Nom</div>
+            <div class="w-2/12 text-sm font-medium text-gray-700">Taille</div>
+            <div class="w-3/12 text-sm font-medium text-gray-700">Modifié le</div>
+            <div class="w-1/12"></div>
+        </div>
+
+        <div class="divide-y divide-gray-200">
+            <div *ngFor="let file of files" class="file-card px-4 py-3 flex items-center hover:bg-gray-50">
+                <div class="w-6/12 flex items-center">
+                    <svg class="w-5 h-5 mr-3" [ngClass]="file.iconColor" [innerHTML]="file.iconSVG"></svg>
+                    <span class="text-sm font-medium text-gray-900">{{ file.name }}</span>
+                </div>
+                <div class="w-2/12 text-sm text-gray-500">{{ file.size }}</div>
+                <div class="w-3/12 text-sm text-gray-500">{{ file.modified }}</div>
+                <div class="w-1/12 flex justify-end">
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
