@@ -13,8 +13,7 @@
 
 ## ✨ Features
 
-- 🔒 Secure, local document storage
-- 🗃️ Organisation of documents by categories/tags
+- 🔒 File Encryption
 - 🔍 Integrated search system
 - 📝 Rich text editor
 - 👤 Local multi-profile management (coming soon)
