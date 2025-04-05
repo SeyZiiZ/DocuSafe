@@ -13,7 +13,7 @@
 
 ## ✨ Features
 
-- 🔒 File Encryption
+- 🔒 File Encryption AES / RSA
 - 🔍 Integrated search system
 - 📝 Rich text editor
 - 👤 Local multi-profile management (coming soon)
