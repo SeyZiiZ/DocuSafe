@@ -2,6 +2,8 @@
 
 **DocumentSafe** is a secure desktop document management application designed to work offline. It enables users to store, organise, consult and search confidential documents locally, without relying on the cloud.
 
+<img src="./images/home_docusafe.PNG" alt="Image of Docusafe home page" width="1000" />
+
 ---
 
 ## 🛠️ Technical stack
