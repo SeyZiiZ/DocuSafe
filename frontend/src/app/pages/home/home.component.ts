@@ -29,9 +29,12 @@ export class HomeComponent {
   ) {}
 
   async ngOnInit() {
-    this.currentPath = await this.store.get('storagePath') || '';
-    this.pseudo = await this.store.get('pseudo') || 'Unknown ?';
-    this.profileImageUrl = await this.store.get('profileImage') || '';
+    const user = await this.store.getCurrentUser();
+    if (!user) return;
+
+    this.currentPath = user?.storagePath || '?'
+    this.pseudo = user?.pseudo || 'Unknown ?';
+    this.profileImageUrl = user?.profileImage || '/assets/images/default-avatar.png';
 
     if (this.currentPath) {
       this.fileService.files$.subscribe(files => this.files = files);
@@ -39,8 +42,8 @@ export class HomeComponent {
     }
   }
 
-  disconnect() {
-    this.store.set("pseudo", "");
-    this.router.navigateByUrl("/");
+  async disconnect(): Promise<void> {
+    this.store.setUserData('currentUser', null);
+    this.router.navigateByUrl('/');
   }
 }

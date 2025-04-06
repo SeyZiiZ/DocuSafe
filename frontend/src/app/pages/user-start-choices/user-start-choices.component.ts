@@ -21,15 +21,29 @@ export class UserStartChoicesComponent {
   ) {}
 
   async ngOnInit() {
-    this.pseudo = await this.store.get('pseudo') || '';
-    this.store.set('encryption', this.encryptionEnabled);
+    const user = await this.store.getCurrentUser();
+    if (!user?.pseudo) {
+      this.router.navigateByUrl('/');
+      return;
+    }
+
+    if (user?.storagePath) {
+      this.router.navigateByUrl('/home');
+    } else {
+      this.pseudo = user?.pseudo;
+    }
   }
 
   chooseDirectory() {
-    (window as any).electronAPI.chooseDirectory().then((path: string) => {
+    (window as any).electronAPI.chooseDirectory().then(async (path: string) => {
       if (path) {
+        const user = await this.store.getCurrentUser();
+        if (!user && !user?.pseudo) return;
+  
+        user.storagePath = path;
         this.selectedPath = path;
-        this.store.set('storagePath', path);
+
+        this.store.setUserData(user.pseudo, user);
       }
     });
   }

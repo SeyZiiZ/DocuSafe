@@ -10,6 +10,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
 });
 
 contextBridge.exposeInMainWorld('electronStore', {
-    get: (key) => ipcRenderer.invoke('electron-store-get', key),
-    set: (key, value) => ipcRenderer.invoke('electron-store-set', key, value),
+    getUserData: (userId) => ipcRenderer.invoke('electron-store-get-user-data', userId),
+    setUserData: (userId, userData) => ipcRenderer.invoke('electron-store-set-user-data', userId, userData),
 });

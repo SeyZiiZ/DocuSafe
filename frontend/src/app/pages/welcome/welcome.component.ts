@@ -22,27 +22,42 @@ export class WelcomeComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    const savedPseudo = this.store.get('pseudo');
-    if (await savedPseudo) {
+    const user = await this.store.getCurrentUser();
+
+    if (user?.pseudo && user?.storagePath) {
       this.router.navigateByUrl('/home');
+    } else if (user?.pseudo && !user?.storagePath) {
+      this.router.navigateByUrl('/userStartChoices')
     } else {
       this.loading = false;
     }
   }
 
-  start() {
-    if (this.pseudo.trim()) {
-      this.store.set('pseudo', this.pseudo);
-      this.redirecting = true;
+  async start() {
+    const pseudo = this.pseudo.trim();
+    if (!pseudo) return;
 
-      const interval = setInterval(() => {
-        this.countdown--;
+    const existingUser = await this.store.getUserData(pseudo);
 
-        if (this.countdown === 0) {
-          clearInterval(interval);
-          this.router.navigateByUrl("/userStartChoices");
-        }
-      }, 1000);
+    if (!existingUser) {
+        this.store.setUserData(pseudo, {
+        pseudo: pseudo,
+        storagePath: null,
+        profileImage: '/assets/images/default-avatar.png',
+        createdAt: new Date().toISOString()
+      });
     }
+    await this.store.setUserData('currentUser', { pseudo });
+
+    this.redirecting = true;
+
+    const interval = setInterval(() => {
+      this.countdown--;
+  
+      if (this.countdown === 0) {
+        clearInterval(interval);
+        this.router.navigateByUrl("/userStartChoices");
+      }
+    }, 1000);
   }
 }

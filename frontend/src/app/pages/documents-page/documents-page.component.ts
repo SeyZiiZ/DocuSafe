@@ -15,8 +15,8 @@ export class DocumentsPageComponent {
     private router: Router
   ) {}
 
-  disconnect() {
-    this.store.set("pseudo", "");
-    this.router.navigateByUrl("/");
+  async disconnect(): Promise<void> {
+    this.store.setUserData('currentUser', null);
+    this.router.navigateByUrl('/');
   }
 }

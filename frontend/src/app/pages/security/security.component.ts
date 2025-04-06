@@ -38,9 +38,9 @@ export class SecurityComponent {
     }
   }
 
-  disconnect(): void {
-    this.store.set("pseudo", "");
-    this.router.navigateByUrl("/");
+  async disconnect(): Promise<void> {
+    this.store.setUserData('currentUser', null);
+    this.router.navigateByUrl('/');
   }
 
   handleFileChange(event: Event): void {
@@ -106,8 +106,10 @@ export class SecurityComponent {
 
   async downloadEncryptedFile(): Promise<void> {
     if (!this.encryptedData || !this.encryptedFilename) return;
-
-    const defaultFolder  = await this.store.get('storagePath') || '';
+    
+    const user = await this.store.getCurrentUser();
+    if(!user) return;
+    const defaultFolder = user?.storagePath || '';
   
     (window as any).electronAPI
     .openSaveDialog(this.encryptedFilename, defaultFolder)

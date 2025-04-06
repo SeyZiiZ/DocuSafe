@@ -24,13 +24,16 @@ export class SettingsComponent {
   ) {}
 
   async ngOnInit() {
-    this.pseudo = await this.store.get("pseudo") || 'Unknown ?';
-    this.profileImageUrl = await this.store.get('profileImage') || '';
+    const user = await this.store.getCurrentUser();
+    if (!user) return;
+  
+    this.pseudo = user?.pseudo || 'Unknown ?';
+    this.profileImageUrl = user?.profileImage || '/assets/images/default-avatar.png';
   }
 
-  disconnect(): void {
-    this.store.set("pseudo", "");
-    this.router.navigateByUrl("/");
+  async disconnect(): Promise<void> {
+    this.store.setUserData('currentUser', null);
+    this.router.navigateByUrl('/');
   }
 
   async onFileSelected(event: Event): Promise<void> {
@@ -38,11 +41,18 @@ export class SettingsComponent {
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
       
-      // Prévisualisation de l'image
       const reader = new FileReader();
       reader.onload = async (e) => {
         this.profileImageUrl = e.target?.result as string;
-        await this.store.set('profileImage', this.profileImageUrl);
+        const current = await this.store.getUserData('currentUser');
+        const pseudo = current?.pseudo;
+        if (!pseudo) return;
+  
+        const user = await this.store.getUserData(pseudo);
+        if (!user) return;
+  
+        user.profileImage = this.profileImageUrl;
+        await this.store.setUserData(pseudo, user);
       };
       reader.readAsDataURL(this.selectedFile);
     }
@@ -56,25 +66,58 @@ export class SettingsComponent {
     this.selectedFile = null;
   }
 
-  removeProfileImage(): void {
+  async removeProfileImage(): Promise<void> {
     // Simulez la suppression (à remplacer par un appel API réel)
     this.profileImageUrl = '/assets/images/default-avatar.png';
-    this.store.set('profileImage', this.profileImageUrl);
+    const current = await this.store.getUserData('currentUser');
+    const pseudo = current?.pseudo;
+    if (!pseudo) return;
+
+    const user = await this.store.getUserData(pseudo);
+    if (!user) return;
+
+    user.profileImage = this.profileImageUrl;
+    this.store.setUserData(pseudo, user);
     this.selectedFile = null;
     this.showSuccessMessage('Photo de profil supprimée');
   }
 
-  updatePseudo(): void {
-    if (!this.pseudo) return;
-    
+  async updatePseudo(): Promise<void> {
+    const newPseudo = this.pseudo.trim();
+    if (!newPseudo) return;
+  
     try {
-      this.store.set('pseudo', this.pseudo);
+      const currentUser = await this.store.getCurrentUser();
+      if (!currentUser?.pseudo) return;
+  
+      const oldPseudo = currentUser.pseudo;
+  
+      if (oldPseudo === newPseudo) {
+        this.showErrorMessage('Le pseudo est déjà utilisé');
+        return;
+      }
+  
+      const existingUser = await this.store.getUserData(newPseudo);
+      if (existingUser) {
+        this.showErrorMessage('Ce pseudo est déjà pris');
+        return;
+      }
+  
+      const newUserData = { ...currentUser, pseudo: newPseudo };
+  
+      await this.store.setUserData(newPseudo, newUserData);
+
+      await this.store.setUserData('currentUser', { pseudo: newPseudo });
+  
+      await this.store.setUserData(oldPseudo, null);
+  
       this.showSuccessMessage('Nom d\'utilisateur mis à jour avec succès');
     } catch (error: any) {
-      console.log("Erreur", error);
-      this.showErrorMessage('Impossible de modifer le nom d\'utilisateur');
+      console.log('Erreur', error);
+      this.showErrorMessage('Impossible de modifier le nom d\'utilisateur');
     }
-  }
+  }  
+  
 
   private showSuccessMessage(message: string): void {
     this.successMessage = message;

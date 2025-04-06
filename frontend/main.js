@@ -23,12 +23,15 @@ app.whenReady().then(() => {
   createWindow();
 });
 
-ipcMain.handle('electron-store-get', async (_, key) => {
-  return store.get(key);
+ipcMain.handle('electron-store-get-user-data', async (_, userId) => {
+  const users = store.get('users') || {};
+  return users[userId];
 });
 
-ipcMain.handle('electron-store-set', async (_, key, value) => {
-  store.set(key, value);
+ipcMain.handle('electron-store-set-user-data', async (_, userId, userData) => {
+  const users = store.get('users') || {};
+  users[userId] = userData;
+  store.set('users', users);
 });
 
 ipcMain.handle('dialog:openDirectory', async () => {
