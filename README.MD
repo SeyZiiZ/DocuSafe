@@ -38,7 +38,7 @@
 - [SQLite](https://www.sqlite.org/index.html)
 
 ### Launch the backend (dev mode)
-``bash
+```bash
 cd backend
 mvn spring-boot:run
 ```
