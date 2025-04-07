@@ -47,7 +47,8 @@ mvn spring-boot:run
 ```bash
 cd frontend
 npm install
-npm run electron:start
+npm run start
+npm run electron
 ```
 
 ## 🧪 Tests
