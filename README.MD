@@ -19,8 +19,8 @@
 
 - 🔒 File Encryption-Decryption AES / RSA
 - 🔍 Integrated search system
-- 📝 Rich text editor
-- 👤 Local multi-profile management (coming soon)
+- 📝 Rich text editor (coming soon)
+- 👤 Local multi-profile management (partially finished)
 - 🔄 Real-time synchronisation between profiles via WebSocket (coming soon)
 - ✅ Fluid and responsive interface
 
@@ -62,4 +62,3 @@ npm run electron
 - Documents **never** leave the user's machine.
 - Each user profile is locally isolated (coming soon).
 - Local authentication possible (coming soon).
-- File encryption planned in the roadmap.
