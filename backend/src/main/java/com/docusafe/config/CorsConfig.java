@@ -14,7 +14,8 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:4200")
+                        // ng serve en développement, protocole app:// de l'application Electron packagée
+                        .allowedOrigins("http://localhost:4200", "app://docusafe")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*");
             }

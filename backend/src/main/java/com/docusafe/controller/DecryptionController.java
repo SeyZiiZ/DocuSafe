@@ -1,10 +1,13 @@
 package com.docusafe.controller;
 
+import com.docusafe.model.DecryptionResponse;
 import com.docusafe.service.DecryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -18,12 +21,11 @@ public class DecryptionController {
     }
 
     @PostMapping("/decryption")
-    public ResponseEntity<?> receiveFile(
+    public ResponseEntity<DecryptionResponse> receiveFile(
         @RequestParam("file") MultipartFile file,
-        @RequestParam("encryptionType") String encryptionType,
         @RequestParam(value = "aesKey", required = false) String aesKey,
-        @RequestParam(value = "publicKey", required = false) String publicKey
-    ) {
-        return decryptionService.processFile(file, encryptionType, aesKey, publicKey);
+        @RequestParam(value = "privateKey", required = false) String privateKey
+    ) throws IOException {
+        return ResponseEntity.ok(decryptionService.processFile(file, aesKey, privateKey));
     }
 }
