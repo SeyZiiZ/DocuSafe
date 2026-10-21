@@ -14,15 +14,23 @@
             📁 Choisir un dossier
         </button>
 
-        <p *ngIf="selectedPath" class="text-sm text-gray-700 bg-gray-100 p-3 rounded-md border border-gray-200">
+        <p *ngIf="selectedPath" class="text-sm text-gray-700 bg-gray-100 p-3 rounded-md border border-gray-200 break-all">
             Dossier sélectionné : <br />
             <strong>{{ selectedPath }}</strong>
         </p>
 
-        <div class="flex items-center justify-center gap-2">
-            <input id="aesToggle" type="checkbox" [(ngModel)]="encryptionEnabled" class="accent-indigo-500 scale-110" />
-            <label for="aesToggle" class="text-sm text-gray-700">Activer le chiffrement AES</label>
+        <div class="text-left bg-gray-50 border border-gray-200 rounded-md p-3">
+            <div class="flex items-center gap-2">
+                <input id="aesToggle" type="checkbox" [(ngModel)]="encryptionEnabled" class="accent-indigo-500 scale-110" />
+                <label for="aesToggle" class="text-sm font-medium text-gray-700">Activer le chiffrement AES avec une clé de profil</label>
+            </div>
+            <p class="mt-1 ml-6 text-xs text-gray-500">
+                Une clé AES-256 est générée pour votre profil : vous pourrez chiffrer et déchiffrer vos fichiers
+                sans gérer de clé à chaque fois. Si vous définissez un mot de passe, elle sera protégée par celui-ci.
+            </p>
         </div>
+
+        <p *ngIf="errorMessage" class="text-sm text-red-600">{{ errorMessage }}</p>
 
         <button [disabled]="!selectedPath" (click)="continue()"
             class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">

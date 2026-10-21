@@ -1,20 +1,106 @@
-<style>
-    body {
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        background-color: #f9fafb;
-    }
-
-    .file-card {
-        transition: all 0.2s ease;
-    }
-
-    .file-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-</style>
 <div class="flex min-h-screen bg-gray-50">
     <!-- Sidebar -->
     <app-sidebar (disconnectClick)="disconnect()"></app-sidebar>
-    <p>Docs page</p>
+
+    <div class="flex-1 md:ml-64 min-w-0" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <main class="p-4 md:p-6 space-y-5">
+            <!-- En-tête -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-800">Mes documents</h1>
+                    <p class="text-sm text-gray-500 mt-1">{{ stats }}</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" (click)="newDocument()"
+                        class="inline-flex items-center px-4 py-2 rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
+                        + Nouveau document
+                    </button>
+                    <button type="button" (click)="creatingFolder = !creatingFolder"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                        Nouveau dossier
+                    </button>
+                    <button type="button" (click)="importFiles()"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                        Importer
+                    </button>
+                    <button type="button" (click)="reload()" title="Actualiser"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                        ⟳
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nouveau dossier -->
+            <div *ngIf="creatingFolder" class="flex items-center gap-2 bg-white border border-gray-200 rounded-lg p-3">
+                <input type="text" [(ngModel)]="newFolderName" placeholder="Nom du dossier" (keyup.enter)="createFolder()"
+                    (keyup.escape)="creatingFolder = false"
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <button type="button" (click)="createFolder()" [disabled]="!newFolderName.trim()"
+                    class="px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 cursor-pointer">
+                    Créer
+                </button>
+                <button type="button" (click)="creatingFolder = false" class="px-3 py-2 text-sm text-gray-600 cursor-pointer">Annuler</button>
+            </div>
+
+            <!-- Recherche et filtres -->
+            <div class="flex flex-col md:flex-row gap-3">
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input #searchInput type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"
+                        (keyup.escape)="clearSearch()"
+                        placeholder="Rechercher dans les noms et le contenu des documents..."
+                        class="block w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-sm placeholder-gray-500">
+                    <button *ngIf="searchQuery" type="button" (click)="clearSearch()" title="Effacer"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+                <select [(ngModel)]="typeFilter"
+                    class="px-3 py-2 border border-gray-200 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">Tous les types</option>
+                    <option value="encrypted">Fichiers chiffrés</option>
+                    <option value="documents">Documents texte</option>
+                    <option value="folders">Dossiers</option>
+                </select>
+                <select [(ngModel)]="sortKey"
+                    class="px-3 py-2 border border-gray-200 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="name">Trier par nom</option>
+                    <option value="modified">Plus récents</option>
+                    <option value="size">Plus volumineux</option>
+                </select>
+            </div>
+
+            <!-- Fil d'Ariane -->
+            <nav *ngIf="!searchResults" class="flex flex-wrap items-center gap-1 text-sm text-gray-600">
+                <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
+                    <button type="button" (click)="openFolder(crumb.path)" [disabled]="last"
+                        class="hover:text-indigo-600 disabled:font-medium disabled:text-gray-900 disabled:cursor-default cursor-pointer">
+                        {{ crumb.label }}
+                    </button>
+                    <span *ngIf="!last" class="text-gray-400">/</span>
+                </ng-container>
+            </nav>
+
+            <div *ngIf="statusMessage" class="rounded-md bg-green-50 p-3 text-sm text-green-700">{{ statusMessage }}</div>
+            <div *ngIf="errorMessage" class="rounded-md bg-red-50 p-3 text-sm text-red-700">{{ errorMessage }}</div>
+
+            <div *ngIf="dragging"
+                class="border-2 border-dashed border-indigo-400 bg-indigo-50 text-indigo-700 rounded-lg p-6 text-center text-sm pointer-events-none">
+                Déposez vos fichiers pour les copier dans ce dossier
+            </div>
+
+            <app-files-container
+                [title]="searchResults ? (searching ? 'Recherche…' : searchResults.length + ' résultat(s) pour « ' + searchQuery + ' »') : 'Contenu du dossier'"
+                [currentPath]="searchResults ? rootPath : currentFolder"
+                [files]="visibleFiles"
+                [showFolderColumn]="!!searchResults"
+                [emptyMessage]="searchResults ? 'Aucun document ne correspond à votre recherche.' : 'Ce dossier est vide. Importez des fichiers ou glissez-les ici.'"
+                (action)="onFileAction($event)"></app-files-container>
+        </main>
+    </div>
 </div>

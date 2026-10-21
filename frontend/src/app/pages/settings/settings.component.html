@@ -5,12 +5,32 @@
     </div>
 
     <!-- main container -->
-    <div class="flex-1 flex flex-col items-center p-6">
+    <div class="flex-1 flex flex-col items-center p-6 min-w-0">
         <div class="w-full bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->
             <div class="bg-gradient-to-r from-indigo-600 to-purple-800 px-6 py-4">
                 <h2 class="text-xl font-bold text-white">Paramètres du profil</h2>
                 <p class="text-indigo-100 text-sm">Personnalisez votre profil</p>
+            </div>
+
+            <!-- Messages -->
+            <div class="sticky top-0 z-10">
+                <div *ngIf="successMessage" class="rounded-none bg-green-50 px-6 py-3 flex items-center gap-3">
+                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <p class="text-sm font-medium text-green-800">{{ successMessage }}</p>
+                </div>
+                <div *ngIf="errorMessage" class="rounded-none bg-red-50 px-6 py-3 flex items-center gap-3">
+                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
+                </div>
             </div>
 
             <!-- content -->
@@ -24,7 +44,7 @@
                         <div class="relative">
                             <div
                                 class="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
-                                <img [src]="profileImageUrl || '/assets/images/default-avatar.png'"
+                                <img [src]="profileImageUrl"
                                     alt="Photo de profil" class="w-full h-full object-cover">
                             </div>
 
@@ -48,11 +68,11 @@
                         <!-- Actions -->
                         <div class="flex-1">
                             <p class="text-sm text-gray-600 mb-3">
-                                Choisissez une image qui vous représente.
+                                Choisissez une image qui vous représente (2 Mo maximum).
                             </p>
                             <div class="flex flex-wrap gap-2">
                                 <button type="button"
-                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
                                     (click)="uploadProfileImage()" [disabled]="!selectedFile">
                                     Enregistrer
                                 </button>
@@ -78,52 +98,122 @@
                                     <span class="text-gray-500 sm:text-sm">&#64;</span>
                                 </div>
                                 <input type="text" id="pseudo" [(ngModel)]="pseudo"
-                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-12 sm:text-sm border-gray-300 rounded-md py-3"
+                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-12 sm:text-sm border border-gray-300 rounded-md py-3"
                                     placeholder="votre-pseudo">
                             </div>
                         </div>
 
                         <button type="button"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
-                            (click)="updatePseudo()" [disabled]="!pseudoAvailable || !pseudo">
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
+                            (click)="updatePseudo()" [disabled]="!pseudo.trim() || pseudo.trim() === originalPseudo">
                             Mettre à jour
                         </button>
                     </div>
                 </div>
 
-                <!-- Messages -->
-                <div class="mt-4" *ngIf="successMessage">
-                    <div class="rounded-md bg-green-50 p-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-green-800">{{ successMessage }}</p>
-                            </div>
+                <!-- storage folder -->
+                <div class="py-6 border-t border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Dossier de stockage</h3>
+                    <p class="text-sm text-gray-600 mb-3">Les documents restent dans ce dossier, sur votre ordinateur.</p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <code class="px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm break-all">{{ storagePath }}</code>
+                        <button type="button" (click)="changeStorageFolder()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                            Changer de dossier
+                        </button>
+                    </div>
+                </div>
+
+                <!-- password -->
+                <div class="py-6 border-t border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Mot de passe du profil</h3>
+                    <p class="text-sm text-gray-600 mb-4">
+                        {{ hasPassword
+                            ? 'Votre profil est protégé : le mot de passe est demandé à chaque ouverture et protège votre clé de profil.'
+                            : "Aucun mot de passe : n'importe qui utilisant cet ordinateur peut ouvrir ce profil." }}
+                    </p>
+
+                    <div class="max-w-md space-y-3">
+                        <input *ngIf="hasPassword" type="password" [(ngModel)]="currentPassword" placeholder="Mot de passe actuel"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <input type="password" [(ngModel)]="newPassword" placeholder="Nouveau mot de passe (8 caractères minimum)"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <input type="password" [(ngModel)]="confirmPassword" placeholder="Confirmer le nouveau mot de passe"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" (click)="savePassword()" [disabled]="!newPassword || (hasPassword && !currentPassword)"
+                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 cursor-pointer">
+                                {{ hasPassword ? 'Modifier le mot de passe' : 'Définir un mot de passe' }}
+                            </button>
+                            <button *ngIf="hasPassword" type="button" (click)="removePassword()" [disabled]="!currentPassword"
+                                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 cursor-pointer">
+                                Supprimer le mot de passe
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-4" *ngIf="errorMessage">
-                    <div class="rounded-md bg-red-50 p-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
-                            </div>
+                <!-- profile key -->
+                <div class="py-6 border-t border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Clé de profil AES-256</h3>
+
+                    <div *ngIf="hasProfileKey" class="space-y-3">
+                        <p class="text-sm text-gray-600">
+                            Utilisée par défaut pour chiffrer vos fichiers. Sauvegardez-la : si ce profil est supprimé,
+                            elle seule permettra de déchiffrer les fichiers concernés.
+                        </p>
+                        <code *ngIf="showProfileKey" class="block p-2 bg-amber-50 border border-amber-200 rounded font-mono text-sm break-all">
+                            {{ profileKey ?? 'Clé verrouillée : reconnectez-vous avec votre mot de passe.' }}
+                        </code>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" (click)="toggleProfileKey()"
+                                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                                {{ showProfileKey ? 'Masquer la clé' : 'Afficher la clé' }}
+                            </button>
+                            <button type="button" (click)="copyProfileKey()"
+                                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                                Copier la clé
+                            </button>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!hasProfileKey" class="max-w-md space-y-3">
+                        <p class="text-sm text-gray-600">
+                            Créez une clé pour chiffrer et déchiffrer vos fichiers sans avoir à gérer une clé par fichier.
+                        </p>
+                        <input *ngIf="hasPassword" type="password" [(ngModel)]="profileKeyPassword" placeholder="Votre mot de passe"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <button type="button" (click)="createProfileKey()" [disabled]="hasPassword && !profileKeyPassword"
+                            class="px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 cursor-pointer">
+                            Créer une clé de profil
+                        </button>
+                    </div>
+                </div>
+
+                <!-- danger zone -->
+                <div class="py-6 border-t border-gray-200">
+                    <h3 class="text-lg font-medium text-red-700 mb-2">Supprimer le profil</h3>
+                    <p class="text-sm text-gray-600 mb-3">
+                        Supprime le profil de cet ordinateur. Vos documents restent dans le dossier de stockage, mais les
+                        fichiers chiffrés avec la clé de profil ne pourront plus être ouverts sans une copie de cette clé.
+                    </p>
+                    <button *ngIf="!confirmDelete" type="button" (click)="confirmDelete = true"
+                        class="px-4 py-2 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-white hover:bg-red-50 cursor-pointer">
+                        Supprimer mon profil
+                    </button>
+                    <div *ngIf="confirmDelete" class="max-w-md space-y-3">
+                        <label for="delete-confirm" class="block text-sm text-gray-700">Tapez <strong>{{ originalPseudo }}</strong> pour confirmer :</label>
+                        <input id="delete-confirm" type="text" [(ngModel)]="deleteConfirmText"
+                            class="block w-full px-3 py-2 border border-red-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
+                        <div class="flex gap-2">
+                            <button type="button" (click)="deleteProfile()" [disabled]="deleteConfirmText !== originalPseudo"
+                                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 cursor-pointer">
+                                Supprimer définitivement
+                            </button>
+                            <button type="button" (click)="confirmDelete = false; deleteConfirmText = ''"
+                                class="px-4 py-2 text-sm text-gray-600 cursor-pointer">
+                                Annuler
+                            </button>
                         </div>
                     </div>
                 </div>

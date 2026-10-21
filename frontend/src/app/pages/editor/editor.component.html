@@ -1,0 +1,68 @@
+<div class="flex min-h-screen bg-gray-50">
+    <app-sidebar (disconnectClick)="disconnect()"></app-sidebar>
+
+    <div class="flex-1 md:ml-64 min-w-0 p-4 md:p-6">
+        <div class="max-w-5xl mx-auto space-y-4">
+            <!-- En-tête -->
+            <div class="flex flex-col lg:flex-row lg:items-end gap-3">
+                <div class="flex-1">
+                    <p class="text-xs text-gray-500 mb-1">{{ location }}</p>
+                    <div class="flex items-center gap-2">
+                        <input type="text" [(ngModel)]="title" (ngModelChange)="dirty = true" placeholder="Titre du document"
+                            class="flex-1 text-2xl font-semibold text-gray-800 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-indigo-500 focus:outline-none py-1" />
+                        <select *ngIf="!filePath" [(ngModel)]="extension" (ngModelChange)="onContentChange()"
+                            class="px-2 py-1 border border-gray-200 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option *ngFor="let ext of extensions" [value]="ext.value">{{ ext.label }}</option>
+                        </select>
+                        <span *ngIf="filePath" class="text-sm text-gray-500">{{ extension }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" (click)="createNew()"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                        Nouveau
+                    </button>
+                    <button type="button" (click)="encryptDocument()" [disabled]="!filePath || dirty"
+                        title="Enregistrez le document avant de le chiffrer"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 cursor-pointer">
+                        🔐 Chiffrer
+                    </button>
+                    <button type="button" (click)="save()" [disabled]="saving"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 cursor-pointer">
+                        {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="errorMessage" class="rounded-md bg-red-50 p-3 text-sm text-red-700">{{ errorMessage }}</div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100">
+                <!-- Barre d'outils -->
+                <div *ngIf="isRich" class="flex flex-wrap items-center gap-1 border-b border-gray-100 px-3 py-2">
+                    <ng-container *ngFor="let group of toolbar; let last = last">
+                        <button *ngFor="let action of group" type="button" class="toolbar-button" [ngClass]="action.className ?? ''"
+                            [title]="action.title" (mousedown)="$event.preventDefault()" (click)="exec(action)">
+                            {{ action.label }}
+                        </button>
+                        <span *ngIf="!last" class="w-px h-5 bg-gray-200 mx-1"></span>
+                    </ng-container>
+                </div>
+
+                <!-- Zone d'édition : toujours présente pour garder la référence, masquée en mode texte -->
+                <div #richEditor [class.hidden]="!isRich" contenteditable="true" (input)="onContentChange()"
+                    data-placeholder="Commencez à écrire…"
+                    class="rich-content min-h-[60vh] px-8 py-6"></div>
+
+                <textarea *ngIf="!isRich" [(ngModel)]="plainText" (ngModelChange)="onContentChange()"
+                    placeholder="Commencez à écrire…" spellcheck="true"
+                    class="block w-full min-h-[60vh] px-8 py-6 font-mono text-sm text-gray-800 rounded-lg focus:outline-none resize-y"></textarea>
+            </div>
+
+            <div class="flex justify-between text-xs text-gray-500">
+                <span>{{ wordCount }} mot(s)</span>
+                <span *ngIf="dirty" class="text-amber-600">Modifications non enregistrées — Ctrl+S pour enregistrer</span>
+                <span *ngIf="!dirty && statusMessage" class="text-green-600">{{ statusMessage }}</span>
+            </div>
+        </div>
+    </div>
+</div>

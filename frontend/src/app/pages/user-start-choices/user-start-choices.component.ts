@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ElectronStoreService } from '../../services/electron/electron-store.service';
+import { ElectronFileService } from '../../services/electron/electron-file.service';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -13,16 +14,18 @@ import { Router } from '@angular/router';
 export class UserStartChoicesComponent {
   selectedPath: string = '';
   pseudo: string = '';
-  encryptionEnabled: boolean = false;
+  encryptionEnabled: boolean = true;
+  errorMessage: string = '';
 
   constructor(
     private router: Router,
-    private store: ElectronStoreService
+    private store: ElectronStoreService,
+    private fileService: ElectronFileService
   ) {}
 
   async ngOnInit() {
     const user = await this.store.getCurrentUser();
-    if (!user?.pseudo) {
+    if (!user?.pseudo || !(await this.store.isUnlocked(user.pseudo))) {
       this.router.navigateByUrl('/');
       return;
     }
@@ -34,23 +37,29 @@ export class UserStartChoicesComponent {
     }
   }
 
-  chooseDirectory() {
-    (window as any).electronAPI.chooseDirectory().then(async (path: string) => {
-      if (path) {
-        const user = await this.store.getCurrentUser();
-        if (!user && !user?.pseudo) return;
-  
-        user.storagePath = path;
-        this.selectedPath = path;
+  async chooseDirectory() {
+    const path = await this.fileService.chooseDirectory();
+    if (!path) return;
 
-        this.store.setUserData(user.pseudo, user);
-      }
-    });
+    const user = await this.store.getCurrentUser();
+    if (!user?.pseudo) return;
+
+    user.storagePath = path;
+    this.selectedPath = path;
+
+    await this.store.setUserData(user.pseudo, user);
   }
 
-  continue() {
-    if (this.selectedPath && this.pseudo) {
-      this.router.navigateByUrl("/home");
+  async continue() {
+    if (!this.selectedPath || !this.pseudo) return;
+
+    if (this.encryptionEnabled) {
+      const result = await this.store.createProfileKey(this.pseudo);
+      if (!result.success) {
+        this.errorMessage = result.error ?? 'Impossible de créer la clé de profil';
+        return;
+      }
     }
+    this.router.navigateByUrl("/home");
   }
 }

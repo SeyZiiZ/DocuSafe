@@ -10,8 +10,33 @@
             </svg>
         </div>
 
+        <div *ngIf="!electronAvailable && !loading" class="rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+            Cette interface doit être ouverte dans l'application DocuSafe (Electron) pour accéder à vos documents.
+        </div>
+
+        <!-- DÉVERROUILLAGE D'UN PROFIL PROTÉGÉ -->
+        <div *ngIf="!loading && !redirecting && lockedProfile" class="bg-white shadow-xl rounded-xl p-8 space-y-5">
+            <img [src]="avatarOf(lockedProfile)" alt="Photo de profil"
+                class="w-20 h-20 rounded-full mx-auto object-cover border-4 border-white shadow">
+            <h1 class="text-xl font-bold text-gray-800">Bon retour <span class="text-indigo-600">{{ lockedProfile.pseudo }}</span></h1>
+            <p class="text-sm text-gray-500">Ce profil est protégé par un mot de passe.</p>
+
+            <input [(ngModel)]="password" type="password" placeholder="Mot de passe" (keyup.enter)="unlock()"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+
+            <p *ngIf="errorMessage" class="text-sm text-red-600">{{ errorMessage }}</p>
+
+            <button (click)="unlock()" [disabled]="!password || checkingPassword"
+                class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md transition cursor-pointer disabled:opacity-50">
+                {{ checkingPassword ? 'Vérification…' : 'Déverrouiller' }}
+            </button>
+            <button (click)="switchProfile()" class="text-sm text-gray-500 hover:text-indigo-600 cursor-pointer">
+                Changer de profil
+            </button>
+        </div>
+
         <!-- PAGE PRINCIPALE -->
-        <div *ngIf="!loading && !redirecting" class="space-y-6">
+        <div *ngIf="!loading && !redirecting && !lockedProfile" class="space-y-6">
             <div class="flex justify-center">
                 <div class="bg-indigo-500 p-4 rounded-xl shadow-lg">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2"
@@ -26,8 +51,21 @@
             <p class="text-gray-500 text-sm">Pas besoin de compte. Entrez votre pseudo et commencez à organiser vos
                 documents.</p>
 
-            <input [(ngModel)]="pseudo" type="text" placeholder="Entrez votre pseudo"
+            <!-- Profils existants -->
+            <div *ngIf="profiles.length > 0" class="space-y-2 text-left">
+                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Profils sur cet ordinateur</p>
+                <button *ngFor="let profile of profiles" type="button" (click)="selectProfile(profile)"
+                    class="w-full flex items-center gap-3 bg-white border border-gray-200 hover:border-indigo-300 hover:shadow-sm rounded-lg px-4 py-2 transition cursor-pointer">
+                    <img [src]="avatarOf(profile)" alt="" class="w-9 h-9 rounded-full object-cover">
+                    <span class="flex-1 font-medium text-gray-800">{{ profile.pseudo }}</span>
+                    <span *ngIf="profile.hasPassword" title="Protégé par mot de passe">🔒</span>
+                </button>
+            </div>
+
+            <input [(ngModel)]="pseudo" type="text" placeholder="Entrez votre pseudo" (keyup.enter)="start()"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+
+            <p *ngIf="errorMessage" class="text-sm text-red-600">{{ errorMessage }}</p>
 
             <button (click)="start()"
                 class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-md transition cursor-pointer">

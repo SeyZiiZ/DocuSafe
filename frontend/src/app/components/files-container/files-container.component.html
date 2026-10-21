@@ -1,32 +1,82 @@
 <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-medium text-gray-900">Fichiers récents</h2>
-        <div class="text-sm text-gray-500">Dossier : {{ currentPath }}</div>
+    <div class="flex items-center justify-between mb-4 gap-4">
+        <h2 class="text-lg font-medium text-gray-900 shrink-0">{{ title }}</h2>
+        <div class="text-sm text-gray-500 truncate min-w-0" [title]="currentPath">Dossier : {{ currentPath }}</div>
     </div>
 
-    <div class="overflow-hidden">
+    <div>
         <div class="bg-gray-50 px-4 py-3 flex items-center rounded-t-lg border-b border-gray-200">
             <div class="w-6/12 text-sm font-medium text-gray-700">Nom</div>
-            <div class="w-2/12 text-sm font-medium text-gray-700">Taille</div>
+            <div class="w-2/12 text-sm font-medium text-gray-700">{{ showFolderColumn ? 'Dossier' : 'Taille' }}</div>
             <div class="w-3/12 text-sm font-medium text-gray-700">Modifié le</div>
             <div class="w-1/12"></div>
         </div>
 
+        <p *ngIf="files.length === 0" class="px-4 py-8 text-center text-sm text-gray-500">{{ emptyMessage }}</p>
+
         <div class="divide-y divide-gray-200">
-            <div *ngFor="let file of files" class="file-card px-4 py-3 flex items-center hover:bg-gray-50">
-                <div class="w-6/12 flex items-center">
-                    <span class="text-sm font-medium text-gray-900">{{ file.name }}</span>
+            <div *ngFor="let file of files; trackBy: trackByPath" class="file-card px-4 py-3 hover:bg-gray-50">
+                <div class="flex items-center">
+                    <div class="w-6/12 flex items-center gap-3 min-w-0">
+                        <span class="shrink-0" [innerHTML]="iconFor(file)"></span>
+
+                        <input *ngIf="renamingPath === file.path" type="text" [(ngModel)]="renameValue"
+                            (keyup.enter)="confirmRename(file)" (keyup.escape)="cancelRename()" (blur)="confirmRename(file)"
+                            (click)="$event.stopPropagation()"
+                            class="rename-input w-full px-2 py-1 text-sm border border-indigo-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+                        <button *ngIf="renamingPath !== file.path" type="button" (click)="openDefault(file)"
+                            class="text-sm font-medium text-gray-900 truncate text-left hover:text-indigo-600 cursor-pointer"
+                            [title]="file.name">
+                            {{ file.name }}
+                        </button>
+                    </div>
+                    <div class="w-2/12 text-sm text-gray-500 truncate">{{ showFolderColumn ? folderOf(file) : file.size }}</div>
+                    <div class="w-3/12 text-sm text-gray-500">{{ file.modified }}</div>
+                    <div class="w-1/12 flex justify-end relative">
+                        <button type="button" class="text-gray-400 hover:text-gray-600 cursor-pointer p-1 rounded hover:bg-gray-100"
+                            (click)="toggleMenu($event, file)" title="Actions">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
+                                </path>
+                            </svg>
+                        </button>
+
+                        <div *ngIf="openMenuFor === file.path" (click)="$event.stopPropagation()"
+                            class="absolute right-0 top-8 z-20 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm">
+                            <button type="button" class="menu-item" (click)="emit('open', file)">
+                                {{ file.isDirectory ? "Ouvrir le dossier" : "Ouvrir avec l'application" }}
+                            </button>
+                            <button *ngIf="isEditable(file)" type="button" class="menu-item" (click)="emit('edit', file)">
+                                Modifier dans l'éditeur
+                            </button>
+                            <button *ngIf="!file.isDirectory && !isEncrypted(file)" type="button" class="menu-item"
+                                (click)="emit('encrypt', file)">
+                                🔐 Chiffrer
+                            </button>
+                            <button *ngIf="isEncrypted(file)" type="button" class="menu-item" (click)="emit('decrypt', file)">
+                                🔓 Déchiffrer
+                            </button>
+                            <button type="button" class="menu-item" (click)="startRename(file)">Renommer</button>
+                            <button type="button" class="menu-item" (click)="emit('showInFolder', file)">
+                                Afficher dans l'explorateur
+                            </button>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <button type="button" class="menu-item text-red-600" (click)="askDelete(file)">
+                                Mettre à la corbeille
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-2/12 text-sm text-gray-500">{{ file.size }}</div>
-                <div class="w-3/12 text-sm text-gray-500">{{ file.modified }}</div>
-                <div class="w-1/12 flex justify-end">
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
-                            </path>
-                        </svg>
-                    </button>
+
+                <p *ngIf="snippetOf(file)" class="mt-1 ml-8 text-xs text-gray-500 italic truncate">{{ snippetOf(file) }}</p>
+
+                <div *ngIf="confirmDeletePath === file.path"
+                    class="mt-2 ml-8 flex items-center gap-3 text-sm bg-red-50 text-red-700 rounded-md px-3 py-2">
+                    <span>Mettre « {{ file.name }} » à la corbeille ?</span>
+                    <button type="button" class="font-medium underline cursor-pointer" (click)="confirmDelete(file)">Oui</button>
+                    <button type="button" class="cursor-pointer" (click)="confirmDeletePath = null">Annuler</button>
                 </div>
             </div>
         </div>
